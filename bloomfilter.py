@@ -73,6 +73,8 @@ class CountingBloomFilter(object):
         '''
         Delete an item from the Bloom filter
         '''
+        if not self.check(item): # If the item is not present in the Bloom filter just return
+            return
         for i in range(self.hash_count):
             bit_position = mmh3.hash(item, i) % self.size
             if self.bit_array[bit_position] > 0:

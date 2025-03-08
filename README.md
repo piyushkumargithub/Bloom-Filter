@@ -1,41 +1,34 @@
-# Bloom Filter Implementation in Python
+# Counting Bloom Filter
 
-This repository contains a Python implementation of a Bloom Filter, a probabilistic data structure that provides fast membership tests with a configurable false positive probability. The implementation uses the Murmur3 hash function and the `bitarray` library.
+A Counting Bloom Filter is a probabilistic data structure used for approximate set membership tests, supporting both insertion and deletion operations. Unlike the standard Bloom Filter, which only uses a bit array, the Counting Bloom Filter maintains an array of counters to keep track of how many elements contribute to each bit being set. This additional information allows for safe deletions.
 
-## Why This Repository?
-I created this repository to make the Bloom Filter concept more understandable and the implementation as clear and efficient as possible. The code avoids unnecessary complexities and emphasizes clean, maintainable practices, such as using static methods for utility functions and choosing clear variable names.
+## Problem Statement
 
-## Key Features
-- **Simple and Clean Code:** Readable code with meaningful variable names and concise methods.
-- **Optimized Performance:** Avoids unnecessary data structures and computations.
-- **Educational Value:** Great for those looking to learn about Bloom Filters and hash-based data structures.
+In a standard Bloom Filter, deletion is not possible because clearing a bit might also affect other elements that contributed to that bit being set. The Counting Bloom Filter solves this by using counters instead of simple bits, allowing safe decrementing when deleting an item.
+
+However, an issue arises when attempting to delete a non-existent element. The false positive nature of the filter may lead to erroneously decrementing counters that belong to existing items, potentially causing them to vanish incorrectly. For example, if an item `A` and a non-existent item `C` both hash to the same counter, and `C` is deleted, the counter might be decremented, impacting the presence of `A`.
 
 ## How It Works
-A Bloom Filter uses multiple hash functions to map input items to a bit array. When an item is added, it sets specific bits to `True`. To check if an item might be present, the filter verifies the same bits. If all relevant bits are `True`, the item is probably present (with a configurable false positive rate). If any bit is `False`, the item is definitely not present.
 
-### Example Usage
+1. **Insertion:** When an item is added, the filter increments the relevant counters based on its hash functions.
+2. **Deletion:** When an item is deleted, the counters are decremented. The counters are only decremented if they are greater than 0, but this still does not fully eliminate the risk of false negatives.
+3. **Checking:** An item is considered to exist if all relevant counters are greater than 0.
+
+## Usage
 ```python
-from bloom_filter import BloomFilter
-
-# Initialize Bloom Filter with expected item count and false positive probability
-bloom = BloomFilter(expected_item_count=20, fp_prob=0.05)
-
-# Add items to the Bloom Filter
-bloom.add("apple")
-bloom.add("banana")
-
-# Check for existence of items
-print(bloom.check("apple"))  # Output: True
-print(bloom.check("grape"))  # Output: False (probably)
+# Example usage of Counting Bloom Filter
+cbf = CountingBloomFilter(expected_item_count=100, fp_prob=0.01)
+cbf.add("apple")
+print(cbf.check("apple"))  # Should return True
+cbf.delete("apple")
+print(cbf.check("apple"))  # Should return False
 ```
 
-## Installation
-```bash
-pip install mmh3
-pip install bitarray
-```
+## Limitations
+- **False Positives:** Like a standard Bloom Filter, the Counting Bloom Filter can still give false positives, leading to potential mismanagement of the counters during deletions.
+- **Risk of False Negatives:** Deleting a non-existent item can lead to decremented counters, possibly causing existing items to be lost if they share hash indices.
 
+## Possible Solution
+To avoid this issue, a more advanced data structure like a **Cuckoo Filter** might be more suitable, as it directly manages individual elements and avoids the decrementing problem associated with false positives in Counting Bloom Filters.
 
----
-Feel free to explore, learn, and contribute!
 

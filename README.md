@@ -35,11 +35,6 @@ pip install mmh3
 pip install bitarray
 ```
 
-## Contributing
-I am always looking to improve this project! If you have suggestions, please open an issue or submit a pull request. Let's make learning data structures more accessible together!
-
-## License
-This project is licensed under the MIT License. See the `LICENSE` file for details.
 
 ---
 Feel free to explore, learn, and contribute!

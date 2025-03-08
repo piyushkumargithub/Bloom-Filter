@@ -1,4 +1,4 @@
-from bloomfilter import BloomFilter
+from bloomfilter import BloomFilter, CountingBloomFilter
 from random import shuffle
 
 n = 20 #no of items to add
@@ -18,3 +18,13 @@ for item in word_present:
     bloomf.add(item)
 
 print(bloomf.check('somedifferentword')) 
+
+countingbloomf = CountingBloomFilter(n,p)
+
+for item in word_present:
+    countingbloomf.add(item)
+print(countingbloomf.check('somedifferentword'))
+
+print(countingbloomf.check('abound'))
+countingbloomf.delete('abound')
+print(countingbloomf.check('abound'))
